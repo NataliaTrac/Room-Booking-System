@@ -1,0 +1,38 @@
+package Rooms;
+
+public class Room {
+    private String type;
+    private int nights;
+    private int price;
+
+    public Room(String type, int nights, int price) {
+        this.type = type;
+        this.nights = nights;
+        this.price = price;
+    }
+
+    public void setNights(int nights){
+        this.nights = nights;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public int getNights() {
+        return nights;
+    }
+
+    public int getPrice() {
+        return price;
+    }
+
+    public void setPrice(int price) {
+        this.price = price;
+    }
+
+    @Override
+    public String toString() {
+        return ", type: " + type + ", how many " + nights + " nigths, price " + price;
+    }
+}
