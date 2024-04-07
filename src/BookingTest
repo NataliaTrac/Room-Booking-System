@@ -1,0 +1,109 @@
+import Rooms.*;
+import java.util.List;
+public class BookingTest {
+
+    // price of rooms (of a given type) from the basket
+    static int price(Basket k, String type) {
+        List<Room> l = k.getBasket().stream()
+                // filters rooms, only those that are of the same type
+                .filter(room -> room.getType().equals(type))
+                .toList();
+        int sum = 0;
+        for (Room p : l) {
+            sum += p.getNights() * p.getPrice();
+        }
+        return sum;
+    }
+
+    public static void main(String[] args) {
+
+        // price list
+        PriceList pricelist = PriceList.fetchPriceList();
+
+        // adding new prices to the pricelist
+        pricelist.add("single", "standard", 100, 4, 80);	// single room of standard type costs 100 EUR/night if the customer books less than 4 nights,
+        // otherwise, it costs 80 EUR/night
+
+        pricelist.add("doubly", "budget", 140);			// Doubly room of budget type costs 140 EUR/night regardless of the number of nights
+
+        pricelist.add("triple", "standard", 300);		// triple room of standard type costs 300 EUR/night regardless of the number of nights
+
+        pricelist.add("family", "premium", 500);		// family room of premium type costs 500 EUR/night regardless of the number of nights
+
+        // Customer ocean declares an amount of 2200 EUR for bookings
+        Customer ocean = new Customer("ocean", 2200);
+
+        // Customer ocean adds to the wishlist various types of rooms:
+        // 4 nights in a single room of standard type, 5 nights in a triple room of standard type,
+        // 3 nights in a Doubly room of premium type, 3 nights in a budget Doubly room
+        ocean.add(new Single("standard", 4));
+        ocean.add(new Triple("standard", 5));
+        ocean.add(new Doubly("premium", 3));
+        ocean.add(new Doubly("budget", 3));
+
+        // Wishlist of customer ocean
+        WishList oceanWishlist = ocean.fetchWishlist();
+
+        System.out.println("Customer's wishlist " + oceanWishlist);
+
+        // Before paying, the customer repacks rooms from the wishlist to the basket.
+        // It's possible that the wishlist contains rooms not priced in the pricelist,
+        // in which case they would be removed from the basket (but not from the wishlist)
+        Basket oceanBasket = new Basket(ocean);
+        ocean.repack(oceanBasket);
+
+        // What is on the wishlist of customer ocean
+        System.out.println("After repacking, the wishlist of customer " + ocean.fetchWishlist());
+
+        // What is in the basket of customer ocean
+        System.out.println("After repacking, the basket of customer " + oceanBasket);
+
+        // How much is the price of all standard type rooms in the basket of customer ocean
+        System.out.println("Standard rooms in the basket of customer ocean cost:  "
+                + price(oceanBasket, "standard"));
+
+        // Customer pays...
+        ocean.pay("card");	// pays with a credit card, commission 10 EUR
+
+        // How much money does customer ocean have left?
+        System.out.println("After paying, customer ocean has left: " + ocean.fetchWallet() + " EUR");
+
+        // Customer might have run out of funds, then rooms are put aside,
+        // otherwise, the basket is empty after payment
+        System.out.println("After paying, the basket of customer " + ocean.fetchBasket());
+        System.out.println("After paying, the basket of customer " + oceanBasket);
+
+        // Now comes customer sea,
+        // declares 780 EUR for bookings
+        Customer sea = new Customer("sea", 780);
+
+        // Booked too much for that amount
+        sea.add(new Single("standard", 3));
+        sea.add(new Doubly("budget", 4));
+
+        // What customer sea has on his wishlist
+        System.out.println("Wishlist of customer " + sea.fetchWishlist());
+
+        // Repacking from the wishlist to the basket,
+        // it may turn out that the wishlist contains rooms not priced in the pricelist,
+        // in such case, they would be removed from the basket (but not from the wishlist)
+        Basket seaBasket = new Basket(sea);
+        sea.repack(seaBasket);
+
+        // What is on the wishlist of sea
+        System.out.println("After repacking, the wishlist of customer " + sea.fetchWishlist());
+
+        // And what is in the basket of customer sea
+        System.out.println("After repacking, the basket of customer " + sea.fetchBasket());
+
+        // customer sea pays
+        sea.pay("transfer");	// pays by bank transfer, no commission
+
+        // How much money does customer sea have left?
+        System.out.println("After paying, customer sea has left: " + sea.fetchWallet() + " EUR");
+
+        // What is left in the basket of customer sea (not enough money)
+        System.out.println("After paying, the basket of customer " + seaBasket);
+
+    }
+}
