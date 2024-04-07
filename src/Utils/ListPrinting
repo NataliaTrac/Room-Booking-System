@@ -1,0 +1,16 @@
+package Utils;
+import Rooms.Room;
+
+import java.util.List;
+public class ListPrinting {
+    public static StringBuilder printList(List<Room> l ){
+        StringBuilder s = new StringBuilder();
+        if(l.isEmpty()){
+            return s.append("-- empty");
+        }
+        for(Room r : l) {
+            s.append("\n").append(r);
+        }
+        return s;
+    }
+}
